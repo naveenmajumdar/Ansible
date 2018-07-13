@@ -1,0 +1,16 @@
+[wlm_server]
+vmwaglapp01-stg.corp.netapp.com
+vmwaglapp02-stg.corp.netapp.com
+
+[wla_server]
+vmwaglapp01-stg.corp.netapp.com
+
+[all:vars]
+ansible_ssh_user=agile
+admin_port=9001
+managed_server_port=7001
+wl_base_dir=/apps/agile/product/agile933/agileDomain
+script_wlm_stop=stopServerAgileManaged1
+script_wla_stop=stopServerAgileAdmin
+script_wlm_start=startServerAgileManaged1
+script_wla_start=startServerAgileAdmin
