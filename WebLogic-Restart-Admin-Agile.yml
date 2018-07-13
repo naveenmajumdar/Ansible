@@ -1,0 +1,31 @@
+---
+  - hosts: wla_server
+    gather_facts: true
+    tasks:
+        - name: Shutdown WebLogic Admin
+          shell: "cd {{ wl_base_dir }}/bin/; nohup ./{{ script_wla_stop }}.sh FORCE agile123 2>&1 &"
+          tags: stop
+
+        - name: Wait for Admin Server to down
+          wait_for: host={{ ansible_eth1.ipv4.address }} port={{ admin_port }} state=absent delay=10 timeout=300
+          tags: stop
+
+        - name: Printing Status
+          debug: msg="WebLogic Admin stoped successfully on {{ ansible_eth1.ipv4.address }}"
+          tags: stop
+
+        - pause:
+            prompt: "Waiting for 100 seconds"
+            seconds: 100
+
+        - name: Starting WebLogic Admin
+          shell: "cd {{ wl_base_dir }}/bin/; nohup ./{{ script_wla_start }}.sh >> {{ wl_base_dir }}/bin/{{ script_wla_start }} 2>&1 &"
+          tags: start
+
+        - name: Waiting to start Admin server
+          wait_for: host={{ ansible_eth1.ipv4.address }} port={{ admin_port }} delay=10 timeout=600
+          tags: start
+
+        - name: Printing Status
+          debug: msg="WebLogic Admin started successfully on {{ ansible_eth1.ipv4.address }}"
+          tags: start
