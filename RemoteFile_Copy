@@ -1,0 +1,18 @@
+---
+  - hosts: agile_server
+    gather_facts: false
+    vars:
+        datestamp: "{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
+    tasks:
+
+        - name: Check if file exists
+          stat: path={{ targetdirectory }}/{{filename}}
+          register: exists
+
+        - name: Take backup of File
+          shell : "tar cvf {{ targetdirectory }}/{{filename}}.{{ datestamp}}.tar {{ targetdirectory }}/{{filename}} "
+          when : exists.stat.exists==True
+
+        - name: Copy artifact from Build server to target
+          copy: src={{ srcdirectory }}/{{ filename }} dest={{ targetdirectory }}
+
